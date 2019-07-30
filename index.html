@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>市民之家</title>
+<script>
+	//首先是autoresize模块
+	function BaseDesign(){
+		this.width = 1920;
+		this.fontSize = 100;
+	}
+	BaseDesign.prototype.renderDOM = function(){
+		var _self = this;
+	    _self.width = this.width;//设置默认最大宽度
+	    _self.fontSize = this.fontSize;//默认字体大小
+		_self.widthProportion = function(){var p = (document.body&&document.body.clientWidth||document.getElementsByTagName("html")[0].offsetWidth)/_self.width;
+		return p>1?1:p;
+		};
+		_self.changePage = function(){
+		document.getElementsByTagName("html")[0].setAttribute("style","font-size:"+_self.widthProportion()*_self.fontSize+"px !important");
+		}
+		_self.changePage();
+		window.addEventListener('resize',function(){_self.changePage();},false);
+	};
+	var baseDesign = new BaseDesign();
+	baseDesign.renderDOM();
+</script>
+
+<style type="text/css">
+	html, body {
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		margin: 0;
+	}
+.b_10_3 {
+		width: 100%;
+		height: 100%;
+		vertical-align:middle;
+		overflow: hidden; text-align:center;
+		background-image: url(img/qiubg.jpg);
+		background-size: cover;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+ }
+ #myCanvas{
+ 	height: 1000px;
+ 	width: 1000px;
+ }
+ 
+ /* 遮罩层 */
+	.uni-mask {
+		background: rgba(0, 0, 0, 0.2);
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		z-index: 1;
+	}
+	
+	.dialog-content{
+		padding: 0.5rem 0.3rem;
+	}
+
+	/* 弹出层形式的广告 */
+	.uni-banner {
+		width: 5.58rem;
+		position: fixed;
+		left: 50%;
+		top: 50%;
+		background: #FFF;
+		border-radius: 0.2rem;
+		z-index: 99;
+		transform: translate(-50%, -50%);
+	}
+	
+	.display-hide {
+		display: none;
+	}
+</style>
+
+<!-- <script type="text/javascript" src="jquery-1.11.3.min.js"></script> -->
+<script type="text/javascript" src="tagcanvas.js"></script>
+<script type="text/javascript">
+var timer;
+function restart(){
+	TagCanvas.Start('myCanvas', 'tags', {
+		reverse: true,
+		depth: 0.8,
+		dragControl: true,
+		decel:0.95,
+		maxSpeed: 0.05,
+		initial: [-0.2, 0],
+		imageRadius: "100%",
+		clickToFront: 500,
+		outlineMethod: "none",
+		imageScale: 0.5,
+		interval: 30,
+		maxBrightness: 1.0,
+		minBrightness: 0.5
+	});
+}
+window.onload = function () {
+	var canvasWidth = document.documentElement.clientHeight/1080*850;
+	var canvasEl = document.getElementById('myCanvas');
+	canvasEl.width = canvasWidth;
+	canvasEl.height = canvasWidth;
+	canvasEl.style.width = canvasWidth+'px';
+	canvasEl.style.height = canvasWidth+'px';
+	var imgs = document.querySelectorAll('a img');
+	for(var i=0; i<imgs.length; i++){
+		imgs[i].width = 150/850*canvasWidth*2;
+		imgs[i].height = 150/850*canvasWidth*2;
+		imgs[i].style.width = 150/850*canvasWidth*2+'px';
+		imgs[i].style.height = 150/850*canvasWidth*2+'px';
+	}
+	try {
+//		var i, et = document.getElementById('tags').childNodes;
+//		for (i in et) {
+//			et[i].nodeName == 'A' && et[i].addEventListener('click', function (e) {
+//				console.log(123);
+//				e.preventDefault();
+//			});
+//		}
+		 
+		TagCanvas.setCallBack(function(){
+			if(timer != null){
+				clearTimeout(timer);
+				timer = null;
+			}
+			timer = setTimeout(restart, 5000);
+		});
+		restart();
+		
+	} catch (e) {
+		// something went wrong, hide the canvas container
+		//document.getElementById('myCanvasContainer').style.display = 'none';
+	}
+	
+	
+};
+
+function onClick(index){
+	console.log(index);
+	var dataItem = dataList[index];
+	document.getElementById('imgSrc').src = dataItem.imgSrc;
+	document.getElementById('dateTime').innerText = dataItem.dateTime;
+	document.getElementById('desc').innerText = dataItem.desc;
+	document.getElementById('dialog').classList.remove('display-hide');
+	document.getElementById('mask').classList.remove('display-hide');
+}
+
+function closeBanner() {
+	document.getElementById('dialog').classList.add('display-hide');
+	document.getElementById('mask').classList.add('display-hide');
+	if(timer != null){
+		clearTimeout(timer);
+		timer = null;
+	}
+	//重启转动的球
+	restart();
+}
+
+var dataList = [
+	{
+		dateTime: '2008年12月30日',
+		desc: '时任浙江省委常委、市委书记王国平，市长蔡奇，市委常委、区委书记朱金坤，区长姜军为杭州市余杭区余杭组团（创新基地）党工委、管委会揭牌。',
+		imgSrc: 'img/big/1_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2010年5月10日',
+		desc: '时任省委常委、常务副省长陈敏尔调研余杭组团，实地踏看余杭组团科创中心、中央公园、海创园、阿里巴巴淘宝城、五常北部园区等项目现场。',
+		imgSrc: 'img/big/2_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2010年7月13日',
+		desc: '时任省领导黄坤明、市长蔡奇、陈加元出席参加浙江海外高层次人才创新园的挂牌仪式。',
+		imgSrc: 'img/big/3_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2011年2月14日',
+		desc: '时任省委书记赵洪祝，省长吕祖善莅临余杭组团（创新基地）指导工作。',
+		imgSrc: 'img/big/4_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2012年5月24日',
+		desc: '时任省委常委、组织部长蔡奇一行调研杭州未来科技城。',
+		imgSrc: 'img/big/5_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2012年7月11日',
+		desc: '时任省委副书记、省长夏宝龙调研未来科技城，实地考察了尚越光电及海创园首期工程。',
+		imgSrc: 'img/big/6_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2012年8月1日',
+		desc: '时任省委书记、省人大常委会主任赵洪祝专题调研指导未来科技城高科技人才创业企业发展情况等科技创新工作。',
+		imgSrc: 'img/big/7_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2013年6月5日',
+		desc: '时任省委副书记、省长李强就贯彻落实省委十三届三次全会精神、全面实施创新驱动发展战略赴杭州未来科技城进行工作指导。',
+		imgSrc: 'img/big/8_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2013年11月5日',
+		desc: '时任省委常委、市委书记龚正赴杭州未来科技城考察。',
+		imgSrc: 'img/big/9_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2014年2月19日',
+		desc: '国家工商总局副局长马正其、总局消保局局长杨红灿、中消协秘书长常宁一行莅临杭州未来科技城指导工作。',
+		imgSrc: 'img/big/10_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2015年4月1日',
+		desc: '时任副省长郑继伟一行来到梦想小镇先导区进行实地考察调研。',
+		imgSrc: 'img/big/11_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2015年6月2日',
+		desc: '时任省委书记夏宝龙一行赴未来科技城考察调研梦想小镇建设情况。',
+		imgSrc: 'img/big/12_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2016年4月23日',
+		desc: '时任全国政协副主席、科技部部长万钢调研梦想小镇建设。',
+		imgSrc: 'img/big/13_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2016年5月30日',
+		desc: '时任省长李强赴未来科技城调研金融小镇（规划）、梦想小镇及杭州虚现科技、杭州非白三维科技等。',
+		imgSrc: 'img/big/14_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2017年3月10日',
+		desc: '时任省委常委、组织部长任振鹤莅临未来科技城指导人才、党建工作。',
+		imgSrc: 'img/big/15_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2017年7月9日',
+		desc: '省委副书记、省长袁家军参加中国人工智能小镇启动仪式。',
+		imgSrc: 'img/big/16_window_pic_xxhdpi.jpg'
+	},
+	{
+		dateTime: '2017年9月6日',
+		desc: '时任全国人大常委会原副委员长路甬祥、省委书记车俊为之江实验室揭牌并讲话，省长袁家军为之江实验室负责人颁发聘书。',
+		imgSrc: 'img/big/17_window_pic_xxhdpi.jpg'
+	}
+];
+
+</script>
+
+</head>
+
+<body>
+<!-- 弹出层 -->
+<div id="dialog" class="uni-banner display-hide" style="background:#FFFFFF;">
+	<div class="dialog-content">
+		<img src="img/big/6_window_pic_xxhdpi.jpg" style="width: 100%;" id="imgSrc"/>
+		<div style="font-size: 0.32rem;color: #333333;margin-top: 0.25rem;" id="dateTime"></div>
+		<div style="font-size: 0.24rem;color: #333333;margin-top: 0.25rem;" id="desc"></div>
+	</div>
+	<div onclick="closeBanner()" style="height: 0.75rem; line-height: 0.75rem; font-size: 0.24rem;color: #CC0000;text-align: center;border-top: 1px solid lightgrey;">
+		确定
+	</div>
+</div>
+<div id="mask" class="uni-mask display-hide"></div>
+<!-- 弹出层 -->
+<div class="b_10_3">
+
+	<canvas width="1000" height="1000" id="myCanvas"></canvas>
+	<div id="tags">
+		<a href="#" onclick="onClick(0)"><img src="img/small/1.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(1)"><img src="img/small/2.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(2)"><img src="img/small/3.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(3)"><img src="img/small/4.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(4)"><img src="img/small/5.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(5)"><img src="img/small/6.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(6)"><img src="img/small/7.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(7)"><img src="img/small/8.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(8)"><img src="img/small/9.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(9)"><img src="img/small/10.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(10)"><img src="img/small/11.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(11)"><img src="img/small/12.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(12)"><img src="img/small/13.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(13)"><img src="img/small/14.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(14)"><img src="img/small/15.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(15)"><img src="img/small/16.jpg" style="width: 80px;height: 80px;"/></a>
+		<a href="#" onclick="onClick(16)"><img src="img/small/17.jpg" style="width: 80px;height: 80px;"/></a>
+	</div>
+
+</div>
+
+</body>
+</html>
